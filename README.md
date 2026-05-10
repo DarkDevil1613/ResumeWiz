@@ -56,7 +56,7 @@ One-click `Print / Save PDF` button triggers browser print with full print CSS:
 ## 🚀 Getting Started
 
 ### Option 1 — Live Demo
-> *(Link will be updated once deployed to GitHub Pages)*
+> [*Open ResumeWiz*](https://darkdevil1613.github.io/ResumeWiz/)
 
 ### Option 2 — Run Locally
 
