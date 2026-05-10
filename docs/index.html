@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume Wizard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════════
+     TOP BAR
+     ══════════════════════════════════════════════════════════════════════════════ -->
+<div class="topbar">
+  <div class="topbar-title">📄 ResumeWizard</div>
+  <div class="topbar-actions">
+    <button class="btn btn-primary" onclick="switchTemplate()">
+      🧾 <span id="templateBtnText">Switch to ATS</span>
+    </button>
+    <button class="btn btn-outline" onclick="toggleEditMode()">
+      ✏️ <span id="editBtnText">Enable Editing</span>
+    </button>
+    <button class="btn btn-success" onclick="printResume()">
+      🖨️ Print / Save PDF
+    </button>
+  </div>
+</div>
+
+<div class="edit-notice" id="editNotice">
+  ✏️ <strong>Edit Mode ON</strong> — Click any text on the resume to edit it directly. Use the panel on the left for structured fields.
+</div>
+
+<div class="app-body">
+
+  <!-- ══════════════════════════════════════════════════════════════════════════════
+       SIDEBAR CONTROL PANEL
+       ══════════════════════════════════════════════════════════════════════════════ -->
+  <div class="sidebar">
+
+    <!-- PHOTO (Modern only) -->
+    <div class="panel-group" id="panel_photo">
+      <h3>Photo</h3>
+      <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+        <div class="upload-icon" id="uploadIcon">📷<span>Upload</span></div>
+        <img id="sidebarPhotoPreview" style="display:none" alt="Preview">
+      </div>
+      <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto(event)">
+    </div>
+
+    <!-- PERSONAL INFO -->
+    <div class="panel-group">
+      <h3>Personal Info</h3>
+      <label class="field-label">First Name</label>
+      <input class="field-input" id="f_firstname" value="Mariana" oninput="updateField('firstname', this.value)">
+      
+      <label class="field-label">Last Name</label>
+      <input class="field-input" id="f_lastname" value="Anderson" oninput="updateField('lastname', this.value)">
+      
+      <label class="field-label">Job Title</label>
+      <input class="field-input" id="f_role" value="Marketing Manager" oninput="updateField('role', this.value)">
+      
+      <label class="field-label">Summary</label>
+      <textarea class="field-input field-textarea" id="f_summary" oninput="updateField('summary', this.value)">Experienced marketing manager with a passion for building brands and driving growth through creative strategies and data-driven decisions. Skilled at leading teams and delivering results.</textarea>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="panel-group">
+      <h3>Contact</h3>
+      <label class="field-label">Phone</label>
+      <input class="field-input" id="f_phone" value="123-456-7890" oninput="updateField('phone', this.value)">
+      
+      <label class="field-label">Email</label>
+      <input class="field-input" id="f_email" value="hello@reallygreatsite.com" oninput="updateField('email', this.value)">
+      
+      <label class="field-label">Address</label>
+      <input class="field-input" id="f_address" value="123 Anywhere St., Any City" oninput="updateField('address', this.value)">
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="panel-group" id="panel_education">
+      <div class="panel-header">
+        <h3>Education</h3>
+        <button class="btn-delete-section" onclick="toggleSection('education')" title="Hide/Show Section">👁️</button>
+      </div>
+      <div id="eduList"></div>
+      <button class="btn-add" onclick="addEdu()">+ Add Education</button>
+    </div>
+
+    <!-- EXPERTISE -->
+    <div class="panel-group" id="panel_expertise">
+      <div class="panel-header">
+        <h3>Expertise</h3>
+        <button class="btn-delete-section" onclick="toggleSection('expertise')" title="Hide/Show Section">👁️</button>
+      </div>
+      <div class="list-items" id="expertiseList"></div>
+      <button class="btn-add" onclick="addExpertise()">+ Add Skill</button>
+    </div>
+
+    <!-- LANGUAGES -->
+    <div class="panel-group" id="panel_languages">
+      <div class="panel-header">
+        <h3>Languages</h3>
+        <button class="btn-delete-section" onclick="toggleSection('languages')" title="Hide/Show Section">👁️</button>
+      </div>
+      <div class="list-items" id="langList"></div>
+      <button class="btn-add" onclick="addLang()">+ Add Language</button>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="panel-group" id="panel_experience">
+      <div class="panel-header">
+        <h3>Experience</h3>
+        <button class="btn-delete-section" onclick="toggleSection('experience')" title="Hide/Show Section">👁️</button>
+      </div>
+      <div id="expList"></div>
+      <button class="btn-add" onclick="addExp()">+ Add Experience</button>
+    </div>
+
+    <!-- REFERENCES -->
+    <div class="panel-group" id="panel_references">
+      <div class="panel-header">
+        <h3>References</h3>
+        <button class="btn-delete-section" onclick="toggleSection('references')" title="Hide/Show Section">👁️</button>
+      </div>
+      <div id="refList"></div>
+      <button class="btn-add" onclick="addRef()">+ Add Reference</button>
+    </div>
+
+    <!-- CERTIFICATIONS (ATS only) -->
+    <div class="panel-group hidden" id="panel_certifications">
+      <div class="panel-header">
+        <h3>Certifications</h3>
+        <button class="btn-delete-section" onclick="toggleSection('certifications')" title="Hide/Show Section">👁️</button>
+      </div>
+      <div class="list-items" id="certList"></div>
+      <button class="btn-add" onclick="addCert()">+ Add Certification</button>
+    </div>
+
+    <!-- DECLARATION -->
+    <div class="panel-group" id="panel_declaration">
+      <div class="panel-header">
+        <h3>Declaration</h3>
+        <button class="btn-delete-section" onclick="toggleSection('declaration')" title="Hide/Show Section">👁️</button>
+      </div>
+      
+      <label class="field-label">Declaration Text</label>
+      <textarea class="field-input field-textarea" id="f_declaration_text" oninput="updateField('declarationText', this.value)">I hereby declare that all the information provided above is true and correct to the best of my knowledge.</textarea>
+      
+      <label class="field-label">Place</label>
+      <input class="field-input" id="f_declaration_place" value="New York" oninput="updateField('declarationPlace', this.value)">
+      
+      <label class="field-label">Your Name</label>
+      <input class="field-input" id="f_declaration_name" value="Mariana Anderson" oninput="updateField('declarationName', this.value)">
+    </div>
+
+    <!-- CUSTOM BLOCKS -->
+    <div class="panel-group">
+      <h3>Custom Blocks</h3>
+      <div class="custom-blocks-list" id="customBlocksList"></div>
+      <button class="btn-add" onclick="addCustomBlock()">+ Add Custom Block</button>
+    </div>
+
+    <!-- COLOR THEME (Modern only) -->
+    <div class="panel-group" id="panel_colors">
+      <h3>Color Theme</h3>
+      <div class="color-row">
+        <div class="color-swatch active" style="background:#1a2332" onclick="setAccent('navy', this)" title="Navy"></div>
+        <div class="color-swatch" style="background:#1a5f5e" onclick="setAccent('teal', this)" title="Teal"></div>
+        <div class="color-swatch" style="background:#5c1a2a" onclick="setAccent('burgundy', this)" title="Burgundy"></div>
+        <div class="color-swatch" style="background:#1e4035" onclick="setAccent('forest', this)" title="Forest"></div>
+        <div class="color-swatch" style="background:#3d4a5c" onclick="setAccent('slate', this)" title="Slate"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════════
+       PREVIEW CANVAS
+       ══════════════════════════════════════════════════════════════════════════════ -->
+  <div class="preview-wrap">
+    
+    <!-- MODERN TEMPLATE (Mariana Anderson) -->
+    <div class="resume" id="resume" data-accent="navy">
+
+      <!-- LEFT COLUMN -->
+      <div class="resume-left">
+
+        <div class="photo-circle">
+          <div class="photo-placeholder" id="r_photo_placeholder">👤</div>
+          <img id="r_photo" style="display:none;" alt="Profile Photo">
+        </div>
+
+        <!-- Contact -->
+        <div class="resume-section" id="section_contact">
+          <div class="left-section-title">Contact</div>
+          <div class="contact-item">
+            <div class="ci-label">Phone</div>
+            <div class="ci-value" id="r_phone" contenteditable="false">123-456-7890</div>
+          </div>
+          <div class="contact-item">
+            <div class="ci-label">Email</div>
+            <div class="ci-value" id="r_email" contenteditable="false">hello@reallygreatsite.com</div>
+          </div>
+          <div class="contact-item">
+            <div class="ci-label">Address</div>
+            <div class="ci-value" id="r_address" contenteditable="false">123 Anywhere St., Any City</div>
+          </div>
+        </div>
+
+        <!-- Education -->
+        <div class="resume-section" id="section_education">
+          <div class="left-section-title">Education</div>
+          <div id="r_edu"></div>
+        </div>
+
+        <!-- Expertise -->
+        <div class="resume-section" id="section_expertise">
+          <div class="left-section-title">Expertise</div>
+          <ul class="expertise-list" id="r_expertise"></ul>
+        </div>
+
+        <!-- Language -->
+        <div class="resume-section" id="section_languages">
+          <div class="left-section-title">Language</div>
+          <div class="lang-list" id="r_lang"></div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="resume-right">
+
+        <!-- Header -->
+        <div>
+          <div class="resume-name">
+            <strong><span id="r_firstname" contenteditable="false">Mariana</span></strong>&nbsp;<span id="r_lastname" contenteditable="false">Anderson</span>
+          </div>
+          <div class="resume-role" id="r_role" contenteditable="false">Marketing Manager</div>
+          <div class="resume-summary" id="r_summary" contenteditable="false">Experienced marketing manager with a passion for building brands and driving growth through creative strategies and data-driven decisions. Skilled at leading teams and delivering results.</div>
+        </div>
+
+        <!-- Experience -->
+        <div class="resume-section" id="section_experience">
+          <div class="right-section-title">Experience</div>
+          <div id="r_exp"></div>
+        </div>
+
+        <!-- Custom Blocks (Modern) -->
+        <div id="r_custom_blocks"></div>
+
+        <!-- Reference -->
+        <div class="resume-section" id="section_references">
+          <div class="right-section-title">Reference</div>
+          <div class="ref-grid" id="r_ref"></div>
+        </div>
+
+        <!-- Declaration (Modern) -->
+        <div class="resume-section" id="section_declaration">
+          <div class="right-section-title">Declaration</div>
+          <div class="declaration-box">
+            <div class="declaration-text" id="r_declaration_text" contenteditable="false">
+              I hereby declare that all the information provided above is true and correct to the best of my knowledge.
+            </div>
+            <div class="declaration-signature">
+              <div class="declaration-place">
+                Place: <strong id="r_declaration_place" contenteditable="false">New York</strong>
+              </div>
+              <div class="declaration-name">
+                <strong id="r_declaration_name" contenteditable="false">Mariana Anderson</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ATS TEMPLATE (Michael Harris) -->
+    <div class="resume ats-template" id="resumeATS" style="display:none;">
+
+      <!-- Header -->
+      <div class="ats-header">
+        <div class="ats-name" id="ats_name" contenteditable="false">MICHAEL HARRIS</div>
+        <div class="ats-role" id="ats_role" contenteditable="false">Digital Marketing | SEO | SEM | Content Marketing</div>
+        <div class="ats-contact" id="ats_contact" contenteditable="false">Sydney, Australia | michael.harris@email.com | +61 412 345 678 | linkedin.com/in/michaelharris</div>
+      </div>
+
+      <!-- Professional Summary -->
+      <div class="ats-section">
+        <div class="ats-section-title">PROFESSIONAL SUMMARY</div>
+        <div id="ats_summary" contenteditable="false" style="font-size:12px; color:#555; line-height:1.7;">
+          Results-oriented marketing professional with over 5 years of experience in digital marketing, brand strategy, and content creation. Proven track record of increasing brand awareness and driving revenue growth through innovative campaigns.
+        </div>
+      </div>
+
+      <!-- Work Experience -->
+      <div class="ats-section" id="ats_section_experience">
+        <div class="ats-section-title">WORK EXPERIENCE</div>
+        <div id="ats_exp"></div>
+      </div>
+
+      <!-- Education -->
+      <div class="ats-section" id="ats_section_education">
+        <div class="ats-section-title">EDUCATION</div>
+        <div id="ats_edu"></div>
+      </div>
+
+      <!-- Skills -->
+      <div class="ats-section" id="ats_section_expertise">
+        <div class="ats-section-title">SKILLS</div>
+        <div class="ats-skills-grid" id="ats_skills"></div>
+      </div>
+
+      <!-- Certifications -->
+      <div class="ats-section" id="ats_section_certifications">
+        <div class="ats-section-title">CERTIFICATIONS</div>
+        <div class="ats-cert-list" id="ats_certs"></div>
+      </div>
+
+      <!-- Custom Blocks (ATS) -->
+      <div id="ats_custom_blocks"></div>
+
+      <!-- Declaration (ATS) -->
+      <div class="ats-section" id="ats_section_declaration">
+        <div class="ats-section-title">DECLARATION</div>
+        <div class="ats-declaration">
+          <div class="ats-declaration-text" id="ats_declaration_text" contenteditable="false">
+            I hereby declare that all the information provided above is true and correct to the best of my knowledge.
+          </div>
+          <div class="ats-declaration-signature">
+            <div class="ats-declaration-place">
+              Place: <strong id="ats_declaration_place" contenteditable="false">New York</strong>
+            </div>
+            <div class="ats-declaration-name">
+              <strong id="ats_declaration_name" contenteditable="false">Mariana Anderson</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src = "index.js"></script>
+</body>
+</html>
